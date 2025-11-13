@@ -6,6 +6,7 @@ import 'package:polarnet_flutter/features/client/home/presentation/pages/client_
 import 'package:polarnet_flutter/features/client/home/presentation/pages/equipment_detail.dart';
 import 'package:polarnet_flutter/features/client/equipments/presentation/pages/client_equipments_page.dart';
 import 'package:polarnet_flutter/features/client/services/presentation/pages/services_page.dart';
+import 'package:polarnet_flutter/shared/profile/presentation/pages/profile_page.dart';
 import 'package:polarnet_flutter/shared/domain/models/equipment.dart';
 
 class MainClientPage extends StatefulWidget {
@@ -42,7 +43,7 @@ class _MainClientPageState extends State<MainClientPage> {
       case 2:
         return ServicesPage(clientId: clientId);
       case 3:
-        return const Center(child: Text('Perfil - En construcción'));
+        return const ProfilePage();
       default:
         return const ClientHomePage();
     }

@@ -12,6 +12,7 @@ import 'package:polarnet_flutter/features/client/services/data/remote/service_re
 import 'package:polarnet_flutter/features/client/services/data/repositories/service_request_repository_impl.dart';
 import 'package:polarnet_flutter/features/client/services/domain/repositories/service_request_repository.dart';
 import 'package:polarnet_flutter/features/client/services/presentation/blocs/service_request_bloc.dart';
+import 'package:polarnet_flutter/shared/profile/presentation/blocs/profile_bloc.dart';
 import 'package:polarnet_flutter/main/main_client_page.dart';
 import 'dart:developer' as developer;
 import 'core/theme/app_theme.dart';
@@ -159,6 +160,11 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => ServiceRequestBloc(
             serviceRequestRepository,
+          ),
+        ),
+        BlocProvider(
+          create: (context) => ProfileBloc(
+            AuthLocalDataSourceImpl(database),
           ),
         ),
       ],
