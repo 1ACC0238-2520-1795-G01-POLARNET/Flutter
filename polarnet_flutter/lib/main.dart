@@ -13,7 +13,12 @@ import 'package:polarnet_flutter/features/client/services/data/repositories/serv
 import 'package:polarnet_flutter/features/client/services/domain/repositories/service_request_repository.dart';
 import 'package:polarnet_flutter/features/client/services/presentation/blocs/service_request_bloc.dart';
 import 'package:polarnet_flutter/shared/profile/presentation/blocs/profile_bloc.dart';
+import 'package:polarnet_flutter/features/provider/add/data/remote/add_equipment_service.dart';
+import 'package:polarnet_flutter/features/provider/add/data/repositories/add_equipment_repository_impl.dart';
+import 'package:polarnet_flutter/features/provider/add/domain/repositories/add_equipment_repository.dart';
+import 'package:polarnet_flutter/features/provider/add/presentation/blocs/add_equipment_bloc.dart';
 import 'package:polarnet_flutter/main/main_client_page.dart';
+import 'package:polarnet_flutter/main/main_provider_page.dart';
 import 'dart:developer' as developer;
 import 'core/theme/app_theme.dart';
 import 'core/services/supabase_service.dart';
@@ -26,7 +31,6 @@ import 'features/auth/presentation/blocs/auth_bloc.dart';
 import 'features/auth/presentation/blocs/auth_event.dart';
 import 'features/auth/presentation/blocs/auth_state.dart';
 import 'features/auth/presentation/pages/login_page.dart';
-import 'shared/pages/provider_home_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -65,6 +69,9 @@ void main() async {
     final serviceRequestRepository = ServiceRequestRepositoryImpl(
       ServiceRequestService(),
     );
+    final addEquipmentRepository = AddEquipmentRepositoryImpl(
+      AddEquipmentService(),
+    );
 
     runApp(
       MyApp(
@@ -74,6 +81,7 @@ void main() async {
         equipmentRepository: equipmentReository,
         clientEquipmentRepository: clientEquipmentRepository,
         serviceRequestRepository: serviceRequestRepository,
+        addEquipmentRepository: addEquipmentRepository,
       ),
     );
   } catch (e, stackTrace) {
@@ -122,6 +130,7 @@ class MyApp extends StatelessWidget {
   final EquipmentRepository equipmentRepository;
   final ClientEquipmentRepository clientEquipmentRepository;
   final ServiceRequestRepository serviceRequestRepository;
+  final AddEquipmentRepository addEquipmentRepository;
 
   const MyApp({
     super.key,
@@ -131,6 +140,7 @@ class MyApp extends StatelessWidget {
     required this.equipmentRepository,
     required this.clientEquipmentRepository,
     required this.serviceRequestRepository,
+    required this.addEquipmentRepository,
   });
 
   @override
@@ -165,6 +175,11 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => ProfileBloc(
             AuthLocalDataSourceImpl(database),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => AddEquipmentBloc(
+            addEquipmentRepository,
           ),
         ),
       ],
@@ -208,10 +223,10 @@ class MyApp extends StatelessWidget {
                 return const MainClientPage();
               } else if (state.user.role == UserRole.provider) {
                 developer.log(
-                  '🏠 [MAIN] Navegando a ProviderHomePage',
+                  '🏠 [MAIN] Navegando a MainProviderPage',
                   name: 'PolarNet',
                 );
-                return ProviderHomePage(user: state.user);
+                return const MainProviderPage();
               } else {
                 developer.log(
                   '⚠️ [MAIN] Rol desconocido: ${state.user.role}',

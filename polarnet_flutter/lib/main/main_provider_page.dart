@@ -1,7 +1,8 @@
-/*import 'package:flutter/material.dart';
-import 'package:polar_net/features/provider/home/presentation/pages/home_provider_page.dart';
-import 'package:polar_net/features/provider/equipment/presentation/pages/my_equipment_page.dart';
-import 'package:polar_net/features/provider/profile/presentation/pages/profile_provider_page.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polarnet_flutter/features/auth/presentation/blocs/auth_bloc.dart';
+import 'package:polarnet_flutter/features/auth/presentation/blocs/auth_state.dart';
+import 'package:polarnet_flutter/features/provider/add/presentation/pages/add_equipment_page.dart';
 
 class MainProviderPage extends StatefulWidget {
   const MainProviderPage({super.key});
@@ -13,37 +14,70 @@ class MainProviderPage extends StatefulWidget {
 class _MainProviderPageState extends State<MainProviderPage> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = const [
-    HomeProviderPage(),
-    MyEquipmentPage(),
-    ProfileProviderPage(),
-  ];
+  Widget _buildPage(int index, int providerId) {
+    switch (index) {
+      case 0:
+        return const Center(child: Text('Inicio - Próximamente'));
+      case 1:
+        return const Center(child: Text('Mis Equipos - Próximamente'));
+      case 2:
+        return AddEquipmentPage(
+          providerId: providerId,
+          onEquipmentAdded: () {},
+        );
+      case 3:
+        return const Center(child: Text('Perfil - Próximamente'));
+      default:
+        return AddEquipmentPage(
+          providerId: providerId,
+          onEquipmentAdded: () {},
+        );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: SafeArea(child: _pages[_selectedIndex]),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _selectedIndex,
-        onTap: (value) => setState(() => _selectedIndex = value),
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard_outlined),
-            activeIcon: Icon(Icons.dashboard),
-            label: 'Inicio',
+    return BlocBuilder<AuthBloc, AuthState>(
+      builder: (context, authState) {
+        // Obtener el providerId del usuario autenticado
+        final providerId = authState is AuthAuthenticated
+            ? (authState.user.id ?? 0)
+            : 0;
+
+        return Scaffold(
+          body: SafeArea(child: _buildPage(_selectedIndex, providerId)),
+          bottomNavigationBar: BottomNavigationBar(
+            currentIndex: _selectedIndex,
+            onTap: (value) => setState(() => _selectedIndex = value),
+            selectedItemColor: Colors.black,
+            unselectedItemColor: Colors.black,
+            selectedLabelStyle: const TextStyle(color: Colors.black),
+            unselectedLabelStyle: const TextStyle(color: Colors.black),
+            items: const [
+              BottomNavigationBarItem(
+                icon: Icon(Icons.home_outlined),
+                activeIcon: Icon(Icons.home),
+                label: 'Inicio',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.inventory_outlined),
+                activeIcon: Icon(Icons.inventory),
+                label: 'Inventario',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.add_box_outlined),
+                activeIcon: Icon(Icons.add_box),
+                label: 'Agregar',
+              ),
+              BottomNavigationBarItem(
+                icon: Icon(Icons.person_outline),
+                activeIcon: Icon(Icons.person),
+                label: 'Perfil',
+              ),
+            ],
           ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.handyman_outlined),
-            activeIcon: Icon(Icons.handyman),
-            label: 'Equipos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline),
-            activeIcon: Icon(Icons.person),
-            label: 'Perfil',
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
-}*/
+}
