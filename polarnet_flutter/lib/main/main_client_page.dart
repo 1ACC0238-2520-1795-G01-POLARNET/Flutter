@@ -5,6 +5,7 @@ import 'package:polarnet_flutter/features/auth/presentation/blocs/auth_state.dar
 import 'package:polarnet_flutter/features/client/home/presentation/pages/client_home_page.dart';
 import 'package:polarnet_flutter/features/client/home/presentation/pages/equipment_detail.dart';
 import 'package:polarnet_flutter/features/client/equipments/presentation/pages/client_equipments_page.dart';
+import 'package:polarnet_flutter/features/client/services/presentation/pages/services_page.dart';
 import 'package:polarnet_flutter/shared/domain/models/equipment.dart';
 
 class MainClientPage extends StatefulWidget {
@@ -39,7 +40,7 @@ class _MainClientPageState extends State<MainClientPage> {
           onTapEquipmentCard: _navigateToEquipmentDetail,
         );
       case 2:
-        return const Center(child: Text('Servicios - En construcción'));
+        return ServicesPage(clientId: clientId);
       case 3:
         return const Center(child: Text('Perfil - En construcción'));
       default:
