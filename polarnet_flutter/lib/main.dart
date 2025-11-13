@@ -21,6 +21,7 @@ import 'package:polarnet_flutter/features/provider/home/data/remote/provider_hom
 import 'package:polarnet_flutter/features/provider/home/data/repositories/provider_home_repository_impl.dart';
 import 'package:polarnet_flutter/features/provider/home/domain/repositories/provider_home_repository.dart';
 import 'package:polarnet_flutter/features/provider/home/presentation/blocs/provider_home_bloc.dart';
+import 'package:polarnet_flutter/features/provider/inventory/presentation/blocs/provider_inventory_bloc.dart';
 import 'package:polarnet_flutter/main/main_client_page.dart';
 import 'package:polarnet_flutter/main/main_provider_page.dart';
 import 'dart:developer' as developer;
@@ -195,6 +196,11 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => ProviderHomeBloc(
             providerHomeRepository,
+          ),
+        ),
+        BlocProvider(
+          create: (context) => ProviderInventoryBloc(
+            equipmentRepository,
           ),
         ),
       ],

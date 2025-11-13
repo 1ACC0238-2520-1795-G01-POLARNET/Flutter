@@ -4,6 +4,8 @@ import 'package:polarnet_flutter/features/auth/presentation/blocs/auth_bloc.dart
 import 'package:polarnet_flutter/features/auth/presentation/blocs/auth_state.dart';
 import 'package:polarnet_flutter/features/provider/home/presentation/pages/provider_requests_page.dart';
 import 'package:polarnet_flutter/features/provider/add/presentation/pages/add_equipment_page.dart';
+import 'package:polarnet_flutter/features/provider/inventory/presentation/pages/provider_inventory_page.dart';
+import 'package:polarnet_flutter/shared/profile/presentation/pages/profile_page.dart';
 
 class MainProviderPage extends StatefulWidget {
   const MainProviderPage({super.key});
@@ -20,14 +22,14 @@ class _MainProviderPageState extends State<MainProviderPage> {
       case 0:
         return const ProviderRequestsPage();
       case 1:
-        return const Center(child: Text('Mis Equipos - Próximamente'));
+        return ProviderInventoryPage(providerId: providerId);
       case 2:
         return AddEquipmentPage(
           providerId: providerId,
           onEquipmentAdded: () {},
         );
       case 3:
-        return const Center(child: Text('Perfil - Próximamente'));
+        return const ProfilePage();
       default:
         return const ProviderRequestsPage();
     }

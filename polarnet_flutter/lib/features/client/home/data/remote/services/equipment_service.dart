@@ -54,4 +54,27 @@ class EquipmentService {
       );
     }
   }
+
+  Future<List<EquipmentDto>> getEquipmentsByProviderId(int providerId) async {
+    final url = Uri.parse(
+      '$_baseUrl/${ApiConstants.equipmentTable}?provider_id=eq.$providerId&select=*',
+    );
+
+    final response = await http.get(
+      url,
+      headers: {
+        'apikey': _apiKey,
+        'Authorization': 'Bearer $_apiKey',
+      },
+    );
+
+    if (response.statusCode == 200) {
+      final List<dynamic> jsonList = jsonDecode(response.body);
+      return jsonList.map((e) => EquipmentDto.fromJson(e)).toList();
+    } else {
+      throw Exception(
+        'Error ${response.statusCode}: ${response.reasonPhrase}',
+      );
+    }
+  }
 }

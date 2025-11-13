@@ -68,4 +68,35 @@ class EquipmentRepositoryImpl implements EquipmentRepository {
       return null;
     }
   }
+
+  @override
+  Future<List<Equipment>> getEquipmentsByProviderId(int providerId) async {
+    try {
+      final dtos = await service.getEquipmentsByProviderId(providerId);
+      return dtos
+          .map(
+            (dto) => Equipment(
+              id: dto.id,
+              providerId: dto.providerId,
+              name: dto.name,
+              brand: dto.brand,
+              model: dto.model,
+              category: dto.category,
+              description: dto.description,
+              thumbnail: dto.thumbnail,
+              specifications: dto.specifications,
+              available: dto.available,
+              location: dto.location,
+              pricePerMonth: dto.pricePerMonth,
+              purchasePrice: dto.purchasePrice,
+              createdAt: dto.createdAt,
+              updatedAt: dto.updatedAt,
+            ),
+          )
+          .toList();
+    } catch (e) {
+      developer.log('Error fetching equipments by provider: $e');
+      return [];
+    }
+  }
 }
