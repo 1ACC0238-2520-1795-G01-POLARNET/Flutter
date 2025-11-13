@@ -20,33 +20,26 @@ class _HomePageState extends State<ClientHomePage> {
   @override
   void initState() {
     super.initState();
-    developer.log(
-      '🏗️ [CLIENT HOME] initState - Cargando equipos',
-      name: 'PolarNet',
-    );
-    try {
-      context.read<EquipmentBloc>().add(LoadEquipments());
-      developer.log(
-        '✅ [CLIENT HOME] LoadEquipments event enviado',
-        name: 'PolarNet',
-      );
-    } catch (e, stack) {
-      developer.log(
-        '❌ [CLIENT HOME] Error al cargar equipos: $e',
-        name: 'PolarNet',
-        error: e,
-        stackTrace: stack,
-      );
-    }
+    
+    // Usar PostFrameCallback para evitar acceso al context antes de que esté listo
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        try {
+          context.read<EquipmentBloc>().add(LoadEquipments());
+        } catch (e, stack) {
+          developer.log(
+            '❌ [CLIENT HOME] Error al cargar equipos: $e',
+            name: 'PolarNet',
+            error: e,
+            stackTrace: stack,
+          );
+        }
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    developer.log(
-      '🎨 [CLIENT HOME] build llamado',
-      name: 'PolarNet',
-    );
-    
     return Scaffold(
       appBar: AppBar(
         title: const Text('Equipos Disponibles'),
@@ -59,24 +52,11 @@ class _HomePageState extends State<ClientHomePage> {
       ),
       body: BlocBuilder<EquipmentBloc, EquipmentState>(
         builder: (context, state) {
-          developer.log(
-            '📊 [CLIENT HOME] EquipmentBloc estado: ${state.status}',
-            name: 'PolarNet',
-          );
-          
           if (state.status == EquipmentStatus.loading) {
-            developer.log(
-              '⏳ [CLIENT HOME] Cargando equipos...',
-              name: 'PolarNet',
-            );
             return const Center(child: CircularProgressIndicator());
           }
 
           if (state.status == EquipmentStatus.failure) {
-            developer.log(
-              '❌ [CLIENT HOME] Error: ${state.error}',
-              name: 'PolarNet',
-            );
             return Center(
               child: Text('Error: ${state.error ?? "Error al cargar equipos"}'),
             );

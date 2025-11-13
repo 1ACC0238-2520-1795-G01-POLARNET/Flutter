@@ -4,7 +4,10 @@ import 'package:polarnet_flutter/features/client/home/data/remote/services/equip
 import 'package:polarnet_flutter/features/client/home/data/repositories/equipment_repository_impl.dart';
 import 'package:polarnet_flutter/features/client/home/domain/repositories/equipment_repository.dart';
 import 'package:polarnet_flutter/features/client/home/presentation/blocs/equipment_bloc.dart';
-import 'package:polarnet_flutter/features/client/home/presentation/blocs/equipment_event.dart';
+import 'package:polarnet_flutter/features/client/equipments/data/remote/services/client_equipment_service.dart';
+import 'package:polarnet_flutter/features/client/equipments/data/repositories/client_equipment_repository_impl.dart';
+import 'package:polarnet_flutter/features/client/equipments/domain/repositories/client_equipment_repository.dart';
+import 'package:polarnet_flutter/features/client/equipments/presentation/blocs/client_equipment_bloc.dart';
 import 'package:polarnet_flutter/main/main_client_page.dart';
 import 'dart:developer' as developer;
 import 'core/theme/app_theme.dart';
@@ -51,6 +54,9 @@ void main() async {
     developer.log('🎯 Lanzando app...', name: 'PolarNet');
 
     final equipmentReository = EquipmentRepositoryImpl(EquipmentService());
+    final clientEquipmentRepository = ClientEquipmentRepositoryImpl(
+      ClientEquipmentService(),
+    );
 
     runApp(
       MyApp(
@@ -58,6 +64,7 @@ void main() async {
         localStorage: localStorage,
         database: database,
         equipmentRepository: equipmentReository,
+        clientEquipmentRepository: clientEquipmentRepository,
       ),
     );
   } catch (e, stackTrace) {
@@ -104,6 +111,7 @@ class MyApp extends StatelessWidget {
   final LocalStorageService localStorage;
   final AppDatabase database;
   final EquipmentRepository equipmentRepository;
+  final ClientEquipmentRepository clientEquipmentRepository;
 
   const MyApp({
     super.key,
@@ -111,6 +119,7 @@ class MyApp extends StatelessWidget {
     required this.localStorage,
     required this.database,
     required this.equipmentRepository,
+    required this.clientEquipmentRepository,
   });
 
   @override
@@ -130,9 +139,12 @@ class MyApp extends StatelessWidget {
           },
         ),
         BlocProvider(
-          create: (context) =>
-              EquipmentBloc(repository: equipmentRepository)
-                ..add(LoadEquipments()),
+          create: (context) => EquipmentBloc(repository: equipmentRepository),
+        ),
+        BlocProvider(
+          create: (context) => ClientEquipmentBloc(
+            repository: clientEquipmentRepository,
+          ),
         ),
       ],
       child: MaterialApp(

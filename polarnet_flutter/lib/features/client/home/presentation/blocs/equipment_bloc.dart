@@ -8,10 +8,6 @@ class EquipmentBloc extends Bloc<EquipmentEvent, EquipmentState> {
   final EquipmentRepository repository;
 
   EquipmentBloc({required this.repository}) : super(const EquipmentState()) {
-    developer.log(
-      '🏗️ [EQUIPMENT BLOC] Constructor - Bloc creado',
-      name: 'PolarNet',
-    );
     on<LoadEquipments>(_onLoadEquipments);
   }
 
@@ -19,40 +15,16 @@ class EquipmentBloc extends Bloc<EquipmentEvent, EquipmentState> {
     LoadEquipments event,
     Emitter<EquipmentState> emit,
   ) async {
-    developer.log(
-      '📥 [EQUIPMENT BLOC] LoadEquipments event recibido',
-      name: 'PolarNet',
-    );
-    
     emit(state.copyWith(status: EquipmentStatus.loading));
-    developer.log(
-      '⏳ [EQUIPMENT BLOC] Estado cambiado a loading',
-      name: 'PolarNet',
-    );
 
     try {
-      developer.log(
-        '🔄 [EQUIPMENT BLOC] Llamando a repository.getAllEquipments()',
-        name: 'PolarNet',
-      );
       final equipments = await repository.getAllEquipments();
-      
-      developer.log(
-        '✅ [EQUIPMENT BLOC] Equipos obtenidos: ${equipments.length}',
-        name: 'PolarNet',
-      );
-      
       emit(
         state.copyWith(status: EquipmentStatus.success, equipments: equipments),
       );
-      
-      developer.log(
-        '✅ [EQUIPMENT BLOC] Estado cambiado a success',
-        name: 'PolarNet',
-      );
     } catch (e, stack) {
       developer.log(
-        '❌ [EQUIPMENT BLOC] Error al cargar equipos: $e',
+        '❌ [EQUIPMENT BLOC] Error: $e',
         name: 'PolarNet',
         error: e,
         stackTrace: stack,
@@ -60,11 +32,6 @@ class EquipmentBloc extends Bloc<EquipmentEvent, EquipmentState> {
       
       emit(
         state.copyWith(status: EquipmentStatus.failure, error: e.toString()),
-      );
-      
-      developer.log(
-        '❌ [EQUIPMENT BLOC] Estado cambiado a failure',
-        name: 'PolarNet',
       );
     }
   }
