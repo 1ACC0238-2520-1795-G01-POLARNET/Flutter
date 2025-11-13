@@ -17,6 +17,10 @@ import 'package:polarnet_flutter/features/provider/add/data/remote/add_equipment
 import 'package:polarnet_flutter/features/provider/add/data/repositories/add_equipment_repository_impl.dart';
 import 'package:polarnet_flutter/features/provider/add/domain/repositories/add_equipment_repository.dart';
 import 'package:polarnet_flutter/features/provider/add/presentation/blocs/add_equipment_bloc.dart';
+import 'package:polarnet_flutter/features/provider/home/data/remote/provider_home_service.dart';
+import 'package:polarnet_flutter/features/provider/home/data/repositories/provider_home_repository_impl.dart';
+import 'package:polarnet_flutter/features/provider/home/domain/repositories/provider_home_repository.dart';
+import 'package:polarnet_flutter/features/provider/home/presentation/blocs/provider_home_bloc.dart';
 import 'package:polarnet_flutter/main/main_client_page.dart';
 import 'package:polarnet_flutter/main/main_provider_page.dart';
 import 'dart:developer' as developer;
@@ -72,6 +76,9 @@ void main() async {
     final addEquipmentRepository = AddEquipmentRepositoryImpl(
       AddEquipmentService(),
     );
+    final providerHomeRepository = ProviderHomeRepositoryImpl(
+      ProviderHomeService(),
+    );
 
     runApp(
       MyApp(
@@ -82,6 +89,7 @@ void main() async {
         clientEquipmentRepository: clientEquipmentRepository,
         serviceRequestRepository: serviceRequestRepository,
         addEquipmentRepository: addEquipmentRepository,
+        providerHomeRepository: providerHomeRepository,
       ),
     );
   } catch (e, stackTrace) {
@@ -131,6 +139,7 @@ class MyApp extends StatelessWidget {
   final ClientEquipmentRepository clientEquipmentRepository;
   final ServiceRequestRepository serviceRequestRepository;
   final AddEquipmentRepository addEquipmentRepository;
+  final ProviderHomeRepository providerHomeRepository;
 
   const MyApp({
     super.key,
@@ -141,6 +150,7 @@ class MyApp extends StatelessWidget {
     required this.clientEquipmentRepository,
     required this.serviceRequestRepository,
     required this.addEquipmentRepository,
+    required this.providerHomeRepository,
   });
 
   @override
@@ -180,6 +190,11 @@ class MyApp extends StatelessWidget {
         BlocProvider(
           create: (context) => AddEquipmentBloc(
             addEquipmentRepository,
+          ),
+        ),
+        BlocProvider(
+          create: (context) => ProviderHomeBloc(
+            providerHomeRepository,
           ),
         ),
       ],
