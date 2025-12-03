@@ -31,17 +31,15 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
   final _purchasePriceController = TextEditingController();
   final _locationController = TextEditingController();
 
-  String _selectedCategory = 'Excavadoras';
+  String _selectedCategory = 'Cámaras Frigoríficas';
   bool _available = true;
 
   final List<String> _categories = [
-    'Excavadoras',
-    'Retroexcavadoras',
-    'Cargadores',
-    'Motoniveladoras',
-    'Compactadoras',
-    'Grúas',
-    'Otros',
+    'Cámaras Frigoríficas',
+    'Congeladores',
+    'Refrigeradores',
+    'Vitrinas',
+    'Otros'
   ];
 
   @override
