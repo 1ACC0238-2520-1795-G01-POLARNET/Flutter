@@ -1,7 +1,7 @@
 import 'dart:math';
-import 'package:polarnet_flutter/features/iot/data/remote/iot_service.dart';
-import 'package:polarnet_flutter/features/iot/domain/models/iot_sensor.dart';
-import 'package:polarnet_flutter/features/iot/domain/repositories/iot_repository.dart';
+import 'package:polarnet_flutter/features/dashboard/data/remote/iot_service.dart';
+import 'package:polarnet_flutter/features/dashboard/domain/models/iot_sensor.dart';
+import 'package:polarnet_flutter/features/dashboard/domain/repositories/iot_repository.dart';
 
 class IoTRepositoryImpl implements IoTRepository {
   final IoTService _service;

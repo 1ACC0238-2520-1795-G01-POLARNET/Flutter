@@ -1,8 +1,8 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:polarnet_flutter/features/iot/domain/repositories/iot_repository.dart';
-import 'package:polarnet_flutter/features/iot/presentation/blocs/dashboard_event.dart';
-import 'package:polarnet_flutter/features/iot/presentation/blocs/dashboard_state.dart';
+import 'package:polarnet_flutter/features/dashboard/domain/repositories/iot_repository.dart';
+import 'package:polarnet_flutter/features/dashboard/presentation/blocs/dashboard_event.dart';
+import 'package:polarnet_flutter/features/dashboard/presentation/blocs/dashboard_state.dart';
 
 class IoTBloc extends Bloc<IoTEvent, IoTState> {
   final IoTRepository repository;

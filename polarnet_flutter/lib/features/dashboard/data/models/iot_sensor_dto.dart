@@ -1,4 +1,4 @@
-import 'package:polarnet_flutter/features/iot/domain/models/iot_sensor.dart';
+import 'package:polarnet_flutter/features/dashboard/domain/models/iot_sensor.dart';
 
 class IoTReadingDto {
   final String id;

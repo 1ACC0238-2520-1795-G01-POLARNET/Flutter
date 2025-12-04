@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polarnet_flutter/features/auth/presentation/blocs/auth_bloc.dart';
 import 'package:polarnet_flutter/features/auth/presentation/blocs/auth_state.dart';
-import 'package:polarnet_flutter/features/iot/presentation/pages/dashboard_page.dart';
+import 'package:polarnet_flutter/features/dashboard/presentation/pages/dashboard_page.dart';
 import 'package:polarnet_flutter/features/home/presentation/pages/provider_requests_page.dart';
 import 'package:polarnet_flutter/features/inventory/presentation/pages/provider_inventory_page.dart';
 import 'package:polarnet_flutter/features/profile/presentation/pages/profile_page.dart';

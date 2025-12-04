@@ -3,10 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:polarnet_flutter/core/theme/app_colors.dart';
-import 'package:polarnet_flutter/features/iot/domain/models/iot_sensor.dart';
-import 'package:polarnet_flutter/features/iot/presentation/blocs/dashboard_bloc.dart';
-import 'package:polarnet_flutter/features/iot/presentation/blocs/dashboard_event.dart';
-import 'package:polarnet_flutter/features/iot/presentation/blocs/dashboard_state.dart';
+import 'package:polarnet_flutter/features/dashboard/domain/models/iot_sensor.dart';
+import 'package:polarnet_flutter/features/dashboard/presentation/blocs/dashboard_bloc.dart';
+import 'package:polarnet_flutter/features/dashboard/presentation/blocs/dashboard_event.dart';
+import 'package:polarnet_flutter/features/dashboard/presentation/blocs/dashboard_state.dart';
 
 class IoTDashboardPage extends StatefulWidget {
   final int equipmentId;

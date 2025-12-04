@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:polarnet_flutter/features/iot/domain/models/iot_sensor.dart';
+import 'package:polarnet_flutter/features/dashboard/domain/models/iot_sensor.dart';
 
 abstract class IoTState extends Equatable {
   @override
