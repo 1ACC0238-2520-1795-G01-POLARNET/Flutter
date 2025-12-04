@@ -1,28 +1,22 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:polarnet_flutter/features/client/home/data/remote/services/equipment_service.dart';
-import 'package:polarnet_flutter/features/client/home/data/repositories/equipment_repository_impl.dart';
-import 'package:polarnet_flutter/features/client/home/domain/repositories/equipment_repository.dart';
-import 'package:polarnet_flutter/features/client/home/presentation/blocs/equipment_bloc.dart';
-import 'package:polarnet_flutter/features/client/equipments/data/remote/services/client_equipment_service.dart';
-import 'package:polarnet_flutter/features/client/equipments/data/repositories/client_equipment_repository_impl.dart';
-import 'package:polarnet_flutter/features/client/equipments/domain/repositories/client_equipment_repository.dart';
-import 'package:polarnet_flutter/features/client/equipments/presentation/blocs/client_equipment_bloc.dart';
-import 'package:polarnet_flutter/features/client/services/data/remote/service_request_service.dart';
-import 'package:polarnet_flutter/features/client/services/data/repositories/service_request_repository_impl.dart';
-import 'package:polarnet_flutter/features/client/services/domain/repositories/service_request_repository.dart';
-import 'package:polarnet_flutter/features/client/services/presentation/blocs/service_request_bloc.dart';
-import 'package:polarnet_flutter/shared/profile/presentation/blocs/profile_bloc.dart';
-import 'package:polarnet_flutter/features/provider/add/data/remote/add_equipment_service.dart';
-import 'package:polarnet_flutter/features/provider/add/data/repositories/add_equipment_repository_impl.dart';
-import 'package:polarnet_flutter/features/provider/add/domain/repositories/add_equipment_repository.dart';
-import 'package:polarnet_flutter/features/provider/add/presentation/blocs/add_equipment_bloc.dart';
-import 'package:polarnet_flutter/features/provider/home/data/remote/provider_home_service.dart';
-import 'package:polarnet_flutter/features/provider/home/data/repositories/provider_home_repository_impl.dart';
-import 'package:polarnet_flutter/features/provider/home/domain/repositories/provider_home_repository.dart';
-import 'package:polarnet_flutter/features/provider/home/presentation/blocs/provider_home_bloc.dart';
-import 'package:polarnet_flutter/features/provider/inventory/presentation/blocs/provider_inventory_bloc.dart';
-import 'package:polarnet_flutter/main/main_client_page.dart';
+import 'package:polarnet_flutter/features/inventory/data/remote/equipment_service.dart';
+import 'package:polarnet_flutter/features/inventory/data/repositories/equipment_repository_impl.dart';
+import 'package:polarnet_flutter/features/inventory/domain/repositories/equipment_repository.dart';
+import 'package:polarnet_flutter/features/iot/data/remote/iot_service.dart';
+import 'package:polarnet_flutter/features/iot/data/repositories/iot_repository_impl.dart';
+import 'package:polarnet_flutter/features/iot/domain/repositories/iot_repository.dart';
+import 'package:polarnet_flutter/features/iot/presentation/blocs/dashboard_bloc.dart';
+import 'package:polarnet_flutter/features/profile/presentation/blocs/profile_bloc.dart';
+import 'package:polarnet_flutter/features/add/data/remote/add_equipment_service.dart';
+import 'package:polarnet_flutter/features/add/data/repositories/add_equipment_repository_impl.dart';
+import 'package:polarnet_flutter/features/add/domain/repositories/add_equipment_repository.dart';
+import 'package:polarnet_flutter/features/add/presentation/blocs/add_equipment_bloc.dart';
+import 'package:polarnet_flutter/features/home/data/remote/provider_home_service.dart';
+import 'package:polarnet_flutter/features/home/data/repositories/provider_home_repository_impl.dart';
+import 'package:polarnet_flutter/features/home/domain/repositories/provider_home_repository.dart';
+import 'package:polarnet_flutter/features/home/presentation/blocs/provider_home_bloc.dart';
+import 'package:polarnet_flutter/features/inventory/presentation/blocs/provider_inventory_bloc.dart';
 import 'package:polarnet_flutter/main/main_provider_page.dart';
 import 'dart:developer' as developer;
 import 'core/theme/app_theme.dart';
@@ -31,7 +25,6 @@ import 'core/services/local_storage_service.dart';
 import 'core/database/app_database.dart';
 import 'features/auth/data/datasources/auth_remote_data_source.dart';
 import 'features/auth/data/datasources/auth_local_data_source.dart';
-import 'features/auth/domain/models/user_role.dart';
 import 'features/auth/presentation/blocs/auth_bloc.dart';
 import 'features/auth/presentation/blocs/auth_event.dart';
 import 'features/auth/presentation/blocs/auth_state.dart';
@@ -66,14 +59,8 @@ void main() async {
     developer.log('✅ Database inicializado', name: 'PolarNet');
 
     developer.log('🎯 Lanzando app...', name: 'PolarNet');
-
-    final equipmentReository = EquipmentRepositoryImpl(EquipmentService());
-    final clientEquipmentRepository = ClientEquipmentRepositoryImpl(
-      ClientEquipmentService(),
-    );
-    final serviceRequestRepository = ServiceRequestRepositoryImpl(
-      ServiceRequestService(),
-    );
+    final iotRepository = IoTRepositoryImpl(IoTService());
+    final equipmentRepository = EquipmentRepositoryImpl(EquipmentService());
     final addEquipmentRepository = AddEquipmentRepositoryImpl(
       AddEquipmentService(),
     );
@@ -86,11 +73,10 @@ void main() async {
         supabaseService: supabaseService,
         localStorage: localStorage,
         database: database,
-        equipmentRepository: equipmentReository,
-        clientEquipmentRepository: clientEquipmentRepository,
-        serviceRequestRepository: serviceRequestRepository,
+        equipmentRepository: equipmentRepository,
         addEquipmentRepository: addEquipmentRepository,
         providerHomeRepository: providerHomeRepository,
+        iotRepository: iotRepository,
       ),
     );
   } catch (e, stackTrace) {
@@ -136,9 +122,8 @@ class MyApp extends StatelessWidget {
   final SupabaseService supabaseService;
   final LocalStorageService localStorage;
   final AppDatabase database;
+  final IoTRepository iotRepository;
   final EquipmentRepository equipmentRepository;
-  final ClientEquipmentRepository clientEquipmentRepository;
-  final ServiceRequestRepository serviceRequestRepository;
   final AddEquipmentRepository addEquipmentRepository;
   final ProviderHomeRepository providerHomeRepository;
 
@@ -148,10 +133,9 @@ class MyApp extends StatelessWidget {
     required this.localStorage,
     required this.database,
     required this.equipmentRepository,
-    required this.clientEquipmentRepository,
-    required this.serviceRequestRepository,
     required this.addEquipmentRepository,
     required this.providerHomeRepository,
+    required this.iotRepository,
   });
 
   @override
@@ -171,38 +155,18 @@ class MyApp extends StatelessWidget {
           },
         ),
         BlocProvider(
-          create: (context) => EquipmentBloc(repository: equipmentRepository),
+          create: (context) => ProfileBloc(AuthLocalDataSourceImpl(database)),
         ),
         BlocProvider(
-          create: (context) => ClientEquipmentBloc(
-            repository: clientEquipmentRepository,
-          ),
+          create: (context) => AddEquipmentBloc(addEquipmentRepository),
         ),
         BlocProvider(
-          create: (context) => ServiceRequestBloc(
-            serviceRequestRepository,
-          ),
+          create: (context) => ProviderHomeBloc(providerHomeRepository),
         ),
         BlocProvider(
-          create: (context) => ProfileBloc(
-            AuthLocalDataSourceImpl(database),
-          ),
+          create: (context) => ProviderInventoryBloc(equipmentRepository),
         ),
-        BlocProvider(
-          create: (context) => AddEquipmentBloc(
-            addEquipmentRepository,
-          ),
-        ),
-        BlocProvider(
-          create: (context) => ProviderHomeBloc(
-            providerHomeRepository,
-          ),
-        ),
-        BlocProvider(
-          create: (context) => ProviderInventoryBloc(
-            equipmentRepository,
-          ),
-        ),
+        BlocProvider(create: (context) => IoTBloc(iotRepository)),
       ],
       child: MaterialApp(
         title: 'PolarNet',
@@ -232,28 +196,10 @@ class MyApp extends StatelessWidget {
                 name: 'PolarNet',
               );
               developer.log(
-                '👤 [MAIN] Rol del usuario: ${state.user.role}',
+                '🏠 [MAIN] Navegando a MainProviderPage',
                 name: 'PolarNet',
               );
-              
-              if (state.user.role == UserRole.client) {
-                developer.log(
-                  '🏠 [MAIN] Navegando a MainClientPage',
-                  name: 'PolarNet',
-                );
-                return const MainClientPage();
-              } else if (state.user.role == UserRole.provider) {
-                developer.log(
-                  '🏠 [MAIN] Navegando a MainProviderPage',
-                  name: 'PolarNet',
-                );
-                return const MainProviderPage();
-              } else {
-                developer.log(
-                  '⚠️ [MAIN] Rol desconocido: ${state.user.role}',
-                  name: 'PolarNet',
-                );
-              }
+              return const MainProviderPage();
             }
 
             if (state is AuthError) {

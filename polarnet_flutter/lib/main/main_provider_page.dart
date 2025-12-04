@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polarnet_flutter/features/auth/presentation/blocs/auth_bloc.dart';
 import 'package:polarnet_flutter/features/auth/presentation/blocs/auth_state.dart';
-import 'package:polarnet_flutter/features/provider/home/presentation/pages/provider_requests_page.dart';
-import 'package:polarnet_flutter/features/provider/add/presentation/pages/add_equipment_page.dart';
-import 'package:polarnet_flutter/features/provider/inventory/presentation/pages/provider_inventory_page.dart';
-import 'package:polarnet_flutter/shared/profile/presentation/pages/profile_page.dart';
+import 'package:polarnet_flutter/features/iot/presentation/pages/dashboard_page.dart';
+import 'package:polarnet_flutter/features/home/presentation/pages/provider_requests_page.dart';
+import 'package:polarnet_flutter/features/inventory/presentation/pages/provider_inventory_page.dart';
+import 'package:polarnet_flutter/features/profile/presentation/pages/profile_page.dart';
 
 class MainProviderPage extends StatefulWidget {
   const MainProviderPage({super.key});
@@ -24,10 +24,12 @@ class _MainProviderPageState extends State<MainProviderPage> {
       case 1:
         return ProviderInventoryPage(providerId: providerId);
       case 2:
-        return AddEquipmentPage(
+        return IoTDashboardPage(equipmentId: 123, equipmentName: "Equipo 123");
+
+      /*AddEquipmentPage(
           providerId: providerId,
           onEquipmentAdded: () {},
-        );
+        );*/
       case 3:
         return const ProfilePage();
       default:
