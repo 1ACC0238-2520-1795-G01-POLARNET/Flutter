@@ -47,9 +47,7 @@ class IoTRepositoryImpl implements IoTRepository {
   @override
   Future<List<IoTSensor>> getEquipmentSensors(int equipmentId) async {
     // Obtener el client_id del equipo alquilado si no lo tenemos
-    if (_clientId == null) {
-      _clientId = await _service.getActiveClientForEquipment(equipmentId);
-    }
+    _clientId ??= await _service.getActiveClientForEquipment(equipmentId);
 
     if (_useFakeData) {
       _callCounter++;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polarnet_flutter/core/theme/app_colors.dart';
+import 'package:polarnet_flutter/core/widgets/equipment_image.dart';
 import 'package:polarnet_flutter/features/add/presentation/blocs/add_equipment_bloc.dart';
 import 'package:polarnet_flutter/features/add/presentation/blocs/add_equipment_event.dart';
 import 'package:polarnet_flutter/features/add/presentation/blocs/add_equipment_state.dart';
@@ -39,7 +40,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
     'Congeladores',
     'Refrigeradores',
     'Vitrinas',
-    'Otros'
+    'Otros',
   ];
 
   @override
@@ -58,30 +59,30 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
   void _submitForm() {
     if (_formKey.currentState?.validate() ?? false) {
       context.read<AddEquipmentBloc>().add(
-            AddEquipment(
-              providerId: widget.providerId,
-              name: _nameController.text.trim(),
-              brand: _brandController.text.trim().isEmpty
-                  ? null
-                  : _brandController.text.trim(),
-              model: _modelController.text.trim().isEmpty
-                  ? null
-                  : _modelController.text.trim(),
-              category: _selectedCategory,
-              description: _descriptionController.text.trim().isEmpty
-                  ? null
-                  : _descriptionController.text.trim(),
-              thumbnail: _thumbnailController.text.trim().isEmpty
-                  ? null
-                  : _thumbnailController.text.trim(),
-              pricePerMonth: double.parse(_pricePerMonthController.text),
-              purchasePrice: double.parse(_purchasePriceController.text),
-              location: _locationController.text.trim().isEmpty
-                  ? null
-                  : _locationController.text.trim(),
-              available: _available,
-            ),
-          );
+        AddEquipment(
+          providerId: widget.providerId,
+          name: _nameController.text.trim(),
+          brand: _brandController.text.trim().isEmpty
+              ? null
+              : _brandController.text.trim(),
+          model: _modelController.text.trim().isEmpty
+              ? null
+              : _modelController.text.trim(),
+          category: _selectedCategory,
+          description: _descriptionController.text.trim().isEmpty
+              ? null
+              : _descriptionController.text.trim(),
+          thumbnail: _thumbnailController.text.trim().isEmpty
+              ? null
+              : _thumbnailController.text.trim(),
+          pricePerMonth: double.parse(_pricePerMonthController.text),
+          purchasePrice: double.parse(_purchasePriceController.text),
+          location: _locationController.text.trim().isEmpty
+              ? null
+              : _locationController.text.trim(),
+          available: _available,
+        ),
+      );
     }
   }
 
@@ -144,11 +145,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                     onPressed: () => Navigator.pop(context),
                   ),
                   const SizedBox(width: 12),
-                  const Icon(
-                    Icons.add_circle,
-                    color: Colors.white,
-                    size: 32,
-                  ),
+                  const Icon(Icons.add_circle, color: Colors.white, size: 32),
                   const SizedBox(width: 12),
                   Expanded(
                     child: Column(
@@ -216,7 +213,8 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                                     ),
                                     enabled: !isLoading,
                                     validator: (value) {
-                                      if (value == null || value.trim().isEmpty) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
                                         return 'El nombre es obligatorio';
                                       }
                                       return null;
@@ -239,7 +237,9 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                                     controller: _modelController,
                                     decoration: InputDecoration(
                                       labelText: 'Modelo',
-                                      prefixIcon: const Icon(Icons.model_training),
+                                      prefixIcon: const Icon(
+                                        Icons.model_training,
+                                      ),
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
                                       ),
@@ -314,7 +314,9 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                                     controller: _pricePerMonthController,
                                     decoration: InputDecoration(
                                       labelText: 'Precio por mes *',
-                                      prefixIcon: const Icon(Icons.calendar_month),
+                                      prefixIcon: const Icon(
+                                        Icons.calendar_month,
+                                      ),
                                       prefixText: 'S/ ',
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
@@ -328,7 +330,8 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                                     ],
                                     enabled: !isLoading,
                                     validator: (value) {
-                                      if (value == null || value.trim().isEmpty) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
                                         return 'El precio por mes es obligatorio';
                                       }
                                       if (double.tryParse(value) == null) {
@@ -342,7 +345,9 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                                     controller: _purchasePriceController,
                                     decoration: InputDecoration(
                                       labelText: 'Precio de compra *',
-                                      prefixIcon: const Icon(Icons.shopping_cart),
+                                      prefixIcon: const Icon(
+                                        Icons.shopping_cart,
+                                      ),
                                       prefixText: 'S/ ',
                                       border: OutlineInputBorder(
                                         borderRadius: BorderRadius.circular(12),
@@ -356,7 +361,8 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                                     ],
                                     enabled: !isLoading,
                                     validator: (value) {
-                                      if (value == null || value.trim().isEmpty) {
+                                      if (value == null ||
+                                          value.trim().isEmpty) {
                                         return 'El precio de compra es obligatorio';
                                       }
                                       if (double.tryParse(value) == null) {
@@ -389,6 +395,18 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                               padding: const EdgeInsets.all(16),
                               child: Column(
                                 children: [
+                                  // Vista previa de imagen
+                                  if (_thumbnailController.text.isNotEmpty)
+                                    Padding(
+                                      padding: const EdgeInsets.only(
+                                        bottom: 16,
+                                      ),
+                                      child: Center(
+                                        child: EquipmentImage.large(
+                                          imageUrl: _thumbnailController.text,
+                                        ),
+                                      ),
+                                    ),
                                   TextFormField(
                                     controller: _thumbnailController,
                                     decoration: InputDecoration(
@@ -399,6 +417,7 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                                       ),
                                     ),
                                     enabled: !isLoading,
+                                    onChanged: (_) => setState(() {}),
                                   ),
                                   const SizedBox(height: 16),
                                   TextFormField(
@@ -418,19 +437,27 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                                     padding: const EdgeInsets.all(12),
                                     decoration: BoxDecoration(
                                       color: _available
-                                          ? const Color(0xFFD1F4E0).withValues(alpha: 0.3)
+                                          ? const Color(
+                                              0xFFD1F4E0,
+                                            ).withValues(alpha: 0.3)
                                           : colorScheme.surfaceContainerHighest,
                                       borderRadius: BorderRadius.circular(12),
                                       border: Border.all(
                                         color: _available
-                                            ? const Color(0xFF1B5E37).withValues(alpha: 0.5)
-                                            : colorScheme.outline.withValues(alpha: 0.5),
+                                            ? const Color(
+                                                0xFF1B5E37,
+                                              ).withValues(alpha: 0.5)
+                                            : colorScheme.outline.withValues(
+                                                alpha: 0.5,
+                                              ),
                                       ),
                                     ),
                                     child: Row(
                                       children: [
                                         Icon(
-                                          _available ? Icons.check_circle : Icons.cancel,
+                                          _available
+                                              ? Icons.check_circle
+                                              : Icons.cancel,
                                           color: _available
                                               ? const Color(0xFF1B5E37)
                                               : colorScheme.onSurfaceVariant,
@@ -438,21 +465,26 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                                         const SizedBox(width: 12),
                                         Expanded(
                                           child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.start,
                                             children: [
                                               Text(
                                                 'Disponibilidad',
-                                                style: textTheme.bodyMedium?.copyWith(
-                                                  fontWeight: FontWeight.w500,
-                                                ),
+                                                style: textTheme.bodyMedium
+                                                    ?.copyWith(
+                                                      fontWeight:
+                                                          FontWeight.w500,
+                                                    ),
                                               ),
                                               Text(
                                                 _available
                                                     ? 'Disponible para alquiler'
                                                     : 'No disponible',
-                                                style: textTheme.bodySmall?.copyWith(
-                                                  color: colorScheme.onSurfaceVariant,
-                                                ),
+                                                style: textTheme.bodySmall
+                                                    ?.copyWith(
+                                                      color: colorScheme
+                                                          .onSurfaceVariant,
+                                                    ),
                                               ),
                                             ],
                                           ),
@@ -480,12 +512,18 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
-                              color: const Color(0xFFCFE4FF).withValues(alpha: 0.3),
+                              color: const Color(
+                                0xFFCFE4FF,
+                              ).withValues(alpha: 0.3),
                               borderRadius: BorderRadius.circular(12),
                             ),
                             child: Row(
                               children: [
-                                const Icon(Icons.info, size: 20, color: Color(0xFF004A77)),
+                                const Icon(
+                                  Icons.info,
+                                  size: 20,
+                                  color: Color(0xFF004A77),
+                                ),
                                 const SizedBox(width: 8),
                                 Expanded(
                                   child: Text(
@@ -521,16 +559,21 @@ class _AddEquipmentPageState extends State<AddEquipmentPage> {
                                       ),
                                     )
                                   : Row(
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       children: [
-                                        const Icon(Icons.check_circle, size: 24),
+                                        const Icon(
+                                          Icons.check_circle,
+                                          size: 24,
+                                        ),
                                         const SizedBox(width: 8),
                                         Text(
                                           'Agregar Equipo',
-                                          style: textTheme.titleMedium?.copyWith(
-                                            fontWeight: FontWeight.w600,
-                                            color: Colors.white,
-                                          ),
+                                          style: textTheme.titleMedium
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w600,
+                                                color: Colors.white,
+                                              ),
                                         ),
                                       ],
                                     ),

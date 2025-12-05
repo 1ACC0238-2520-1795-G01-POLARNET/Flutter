@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:polarnet_flutter/core/widgets/equipment_image.dart';
 import 'package:polarnet_flutter/features/inventory/domain/models/equipment.dart';
 
 class EquipmentInventoryCard extends StatelessWidget {
@@ -16,9 +17,7 @@ class EquipmentInventoryCard extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
 
     return Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(16),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       color: colorScheme.surfaceContainerLow,
       elevation: 2,
       child: InkWell(
@@ -32,35 +31,7 @@ class EquipmentInventoryCard extends StatelessWidget {
               // Imagen del equipo
               Stack(
                 children: [
-                  Container(
-                    width: 100,
-                    height: 100,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(12),
-                      color: colorScheme.surfaceContainerHighest,
-                    ),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: equipment.thumbnail != null &&
-                              equipment.thumbnail!.isNotEmpty
-                          ? Image.network(
-                              equipment.thumbnail!,
-                              fit: BoxFit.cover,
-                              errorBuilder: (context, error, stackTrace) {
-                                return Icon(
-                                  Icons.inventory,
-                                  size: 40,
-                                  color: colorScheme.onSurfaceVariant,
-                                );
-                              },
-                            )
-                          : Icon(
-                              Icons.inventory,
-                              size: 40,
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                    ),
-                  ),
+                  EquipmentImage.medium(imageUrl: equipment.thumbnail),
                   // Badge de disponibilidad
                   Positioned(
                     top: 4,
@@ -101,8 +72,8 @@ class EquipmentInventoryCard extends StatelessWidget {
                     Text(
                       equipment.name,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
@@ -119,10 +90,8 @@ class EquipmentInventoryCard extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(
                           equipment.category,
-                          style:
-                              Theme.of(context).textTheme.labelSmall?.copyWith(
-                                    color: colorScheme.onSurfaceVariant,
-                                  ),
+                          style: Theme.of(context).textTheme.labelSmall
+                              ?.copyWith(color: colorScheme.onSurfaceVariant),
                         ),
                       ],
                     ),
@@ -142,9 +111,7 @@ class EquipmentInventoryCard extends StatelessWidget {
                             child: Text(
                               '${equipment.brand ?? ''} ${equipment.model ?? ''}'
                                   .trim(),
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelSmall
+                              style: Theme.of(context).textTheme.labelSmall
                                   ?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                   ),
@@ -168,18 +135,14 @@ class EquipmentInventoryCard extends StatelessWidget {
                           children: [
                             Text(
                               'Precio/mes',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .labelSmall
+                              style: Theme.of(context).textTheme.labelSmall
                                   ?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                   ),
                             ),
                             Text(
                               'S/ ${equipment.pricePerMonth.toStringAsFixed(2)}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
+                              style: Theme.of(context).textTheme.titleMedium
                                   ?.copyWith(
                                     fontWeight: FontWeight.bold,
                                     color: colorScheme.primary,
@@ -216,9 +179,7 @@ class EquipmentInventoryCard extends StatelessWidget {
                               const SizedBox(width: 4),
                               Text(
                                 equipment.available ? 'Disponible' : 'Ocupado',
-                                style: Theme.of(context)
-                                    .textTheme
-                                    .labelSmall
+                                style: Theme.of(context).textTheme.labelSmall
                                     ?.copyWith(
                                       fontWeight: FontWeight.w600,
                                       color: equipment.available

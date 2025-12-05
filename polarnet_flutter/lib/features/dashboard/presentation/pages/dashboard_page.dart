@@ -66,102 +66,161 @@ class _IoTDashboardPageState extends State<IoTDashboardPage> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Text(
-                  'Monitoreo en Tiempo Real',
-                  style: TextStyle(fontSize: 16),
-                ),
-                const SizedBox(width: 8),
-                if (_isAutoRefreshEnabled)
-                  Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
-                    decoration: BoxDecoration(
-                      // ignore: deprecated_member_use
-                      color: Colors.green.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Container(
-                          width: 6,
-                          height: 6,
-                          decoration: const BoxDecoration(
-                            color: Colors.green,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        const Text(
-                          'LIVE',
-                          style: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.green,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-              ],
-            ),
-            Text(
-              widget.equipmentName,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.normal,
+      backgroundColor: AppColors.background,
+      body: Column(
+        children: [
+          // Header con gradiente
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.primary,
+                  AppColors.primaryDark,
+                  AppColors.primary,
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
               ),
             ),
-          ],
-        ),
-        actions: [
-          // Botón para activar/desactivar auto-refresh
-          IconButton(
-            icon: Icon(
-              _isAutoRefreshEnabled ? Icons.pause_circle : Icons.play_circle,
-              color: _isAutoRefreshEnabled ? Colors.orange : Colors.green,
+            padding: const EdgeInsets.only(
+              left: 16,
+              right: 16,
+              top: 32,
+              bottom: 24,
             ),
-            tooltip: _isAutoRefreshEnabled
-                ? 'Pausar actualización'
-                : 'Reanudar actualización',
-            onPressed: _toggleAutoRefresh,
+            child: Row(
+              children: [
+                IconButton(
+                  icon: const Icon(
+                    Icons.arrow_back,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                  onPressed: () => Navigator.of(context).pop(),
+                ),
+                const SizedBox(width: 8),
+                const Icon(Icons.monitor_heart, color: Colors.white, size: 32),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Flexible(
+                            child: Text(
+                              'Monitoreo IoT',
+                              style: textTheme.titleLarge?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          if (_isAutoRefreshEnabled)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                // ignore: deprecated_member_use
+                                color: Colors.green.withOpacity(0.3),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Container(
+                                    width: 8,
+                                    height: 8,
+                                    decoration: const BoxDecoration(
+                                      color: Colors.lightGreenAccent,
+                                      shape: BoxShape.circle,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  const Text(
+                                    'LIVE',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.lightGreenAccent,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                      Text(
+                        widget.equipmentName,
+                        style: textTheme.bodyMedium?.copyWith(
+                          // ignore: deprecated_member_use
+                          color: Colors.white.withOpacity(0.9),
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                IconButton(
+                  icon: Icon(
+                    _isAutoRefreshEnabled
+                        ? Icons.pause_circle
+                        : Icons.play_circle,
+                    color: _isAutoRefreshEnabled
+                        ? Colors.orangeAccent
+                        : Colors.lightGreenAccent,
+                    size: 28,
+                  ),
+                  tooltip: _isAutoRefreshEnabled
+                      ? 'Pausar actualización'
+                      : 'Reanudar actualización',
+                  onPressed: _toggleAutoRefresh,
+                ),
+                IconButton(
+                  icon: const Icon(
+                    Icons.refresh,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                  tooltip: 'Actualizar ahora',
+                  onPressed: () => context.read<IoTBloc>().add(
+                    LoadIoTData(widget.equipmentId),
+                  ),
+                ),
+              ],
+            ),
           ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            tooltip: 'Actualizar ahora',
-            onPressed: () =>
-                context.read<IoTBloc>().add(LoadIoTData(widget.equipmentId)),
+          // Contenido
+          Expanded(
+            child: BlocBuilder<IoTBloc, IoTState>(
+              builder: (context, state) {
+                if (state is IoTLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+                if (state is IoTLoaded) {
+                  if (state.sensors.isEmpty) {
+                    return const Center(
+                      child: Text("Este equipo no tiene sensores instalados."),
+                    );
+                  }
+                  return _buildDashboard(state.sensors);
+                }
+                if (state is IoTError) {
+                  return Center(child: Text("Error: ${state.message}"));
+                }
+                return const SizedBox.shrink();
+              },
+            ),
           ),
         ],
-      ),
-      body: BlocBuilder<IoTBloc, IoTState>(
-        builder: (context, state) {
-          if (state is IoTLoading) {
-            return const Center(child: CircularProgressIndicator());
-          }
-          if (state is IoTLoaded) {
-            if (state.sensors.isEmpty) {
-              return const Center(
-                child: Text("Este equipo no tiene sensores instalados."),
-              );
-            }
-            return _buildDashboard(state.sensors);
-          }
-          if (state is IoTError) {
-            return Center(child: Text("Error: ${state.message}"));
-          }
-          return const SizedBox.shrink();
-        },
       ),
     );
   }

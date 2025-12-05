@@ -23,90 +23,169 @@ class _AlertsPageState extends State<AlertsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        title: const Text('Alertas'),
-        actions: [
-          BlocBuilder<AlertBloc, AlertState>(
-            builder: (context, state) {
-              if (state.unacknowledgedCount > 0) {
-                return TextButton.icon(
-                  onPressed: () {
-                    _showAcknowledgeAllDialog(context);
-                  },
-                  icon: const Icon(Icons.done_all, size: 20),
-                  label: const Text('Marcar todas'),
-                );
-              }
-              return const SizedBox.shrink();
-            },
-          ),
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: () => context.read<AlertBloc>().add(LoadAlerts()),
-          ),
-        ],
-      ),
+      backgroundColor: AppColors.background,
       body: Column(
         children: [
-          _buildFilters(),
-          Expanded(
+          // Header con gradiente
+          Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  AppColors.primary,
+                  AppColors.primaryDark,
+                  AppColors.primary,
+                ],
+                begin: Alignment.centerLeft,
+                end: Alignment.centerRight,
+              ),
+            ),
+            padding: const EdgeInsets.only(
+              left: 24,
+              right: 24,
+              top: 32,
+              bottom: 32,
+            ),
             child: BlocBuilder<AlertBloc, AlertState>(
               builder: (context, state) {
-                if (state.status == AlertStatus.loading) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                if (state.status == AlertStatus.error) {
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                return Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
                       children: [
                         const Icon(
-                          Icons.error_outline,
-                          size: 64,
-                          color: Colors.red,
+                          Icons.warning_amber_rounded,
+                          color: Colors.white,
+                          size: 32,
                         ),
-                        const SizedBox(height: 16),
-                        Text(state.errorMessage ?? 'Error desconocido'),
-                        const SizedBox(height: 16),
-                        ElevatedButton(
-                          onPressed: () =>
-                              context.read<AlertBloc>().add(LoadAlerts()),
-                          child: const Text('Reintentar'),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Alertas',
+                              style: textTheme.headlineMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
+                            Text(
+                              '${state.allAlerts.length} en total',
+                              style: textTheme.bodyMedium?.copyWith(
+                                // ignore: deprecated_member_use
+                                color: Colors.white.withOpacity(0.9),
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
-                  );
-                }
+                    Row(
+                      children: [
+                        if (state.unacknowledgedCount > 0)
+                          IconButton(
+                            icon: const Icon(
+                              Icons.done_all,
+                              color: Colors.white,
+                              size: 28,
+                            ),
+                            onPressed: () => _showAcknowledgeAllDialog(context),
+                            tooltip: 'Marcar todas',
+                          ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.refresh,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                          onPressed: () =>
+                              context.read<AlertBloc>().add(LoadAlerts()),
+                        ),
+                      ],
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+          // Filtros y contenido
+          Expanded(
+            child: Column(
+              children: [
+                _buildFilters(),
+                Expanded(
+                  child: BlocBuilder<AlertBloc, AlertState>(
+                    builder: (context, state) {
+                      if (state.status == AlertStatus.loading) {
+                        return const Center(child: CircularProgressIndicator());
+                      }
 
-                final alerts = state.filteredAlerts;
+                      if (state.status == AlertStatus.error) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const Icon(
+                                Icons.error_outline,
+                                size: 64,
+                                color: Colors.red,
+                              ),
+                              const SizedBox(height: 16),
+                              Text(state.errorMessage ?? 'Error desconocido'),
+                              const SizedBox(height: 16),
+                              ElevatedButton(
+                                onPressed: () =>
+                                    context.read<AlertBloc>().add(LoadAlerts()),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.primary,
+                                  foregroundColor: Colors.white,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 24,
+                                    vertical: 12,
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                                child: const Text('Reintentar'),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
 
-                if (alerts.isEmpty) {
-                  return _buildEmptyState(state);
-                }
+                      final alerts = state.filteredAlerts;
 
-                return RefreshIndicator(
-                  onRefresh: () async {
-                    context.read<AlertBloc>().add(LoadAlerts());
-                  },
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: alerts.length,
-                    itemBuilder: (context, index) {
-                      return _AlertCard(
-                        alert: alerts[index],
-                        onAcknowledge: () {
-                          context.read<AlertBloc>().add(
-                            AcknowledgeAlert(alerts[index].id),
-                          );
+                      if (alerts.isEmpty) {
+                        return _buildEmptyState(state);
+                      }
+
+                      return RefreshIndicator(
+                        onRefresh: () async {
+                          context.read<AlertBloc>().add(LoadAlerts());
                         },
+                        child: ListView.builder(
+                          padding: const EdgeInsets.all(16),
+                          itemCount: alerts.length,
+                          itemBuilder: (context, index) {
+                            return _AlertCard(
+                              alert: alerts[index],
+                              onAcknowledge: () {
+                                context.read<AlertBloc>().add(
+                                  AcknowledgeAlert(alerts[index].id),
+                                );
+                              },
+                            );
+                          },
+                        ),
                       );
                     },
                   ),
-                );
-              },
+                ),
+              ],
             ),
           ),
         ],
@@ -220,6 +299,7 @@ class _AlertsPageState extends State<AlertsPage> {
           borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
+              // ignore: deprecated_member_use
               color: Colors.black.withOpacity(0.05),
               blurRadius: 8,
               offset: const Offset(0, 2),
@@ -257,6 +337,7 @@ class _AlertsPageState extends State<AlertsPage> {
     return FilterChip(
       label: Text(label),
       selected: state.severityFilter == severity,
+      // ignore: deprecated_member_use
       selectedColor: color.withOpacity(0.2),
       checkmarkColor: color,
       onSelected: (_) {
@@ -313,6 +394,14 @@ class _AlertsPageState extends State<AlertsPage> {
               context.read<AlertBloc>().add(AcknowledgeAllAlerts());
               Navigator.of(ctx).pop();
             },
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppColors.primary,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
             child: const Text('Confirmar'),
           ),
         ],
@@ -339,6 +428,7 @@ class _AlertCard extends StatelessWidget {
             : Border(left: BorderSide(color: alert.severityColor, width: 4)),
         boxShadow: [
           BoxShadow(
+            // ignore: deprecated_member_use
             color: Colors.black.withOpacity(0.05),
             blurRadius: 8,
             offset: const Offset(0, 2),
@@ -360,6 +450,7 @@ class _AlertCard extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
+                        // ignore: deprecated_member_use
                         color: alert.severityColor.withOpacity(0.1),
                         shape: BoxShape.circle,
                       ),
@@ -453,6 +544,7 @@ class _AlertCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
+        // ignore: deprecated_member_use
         color: alert.severityColor.withOpacity(0.1),
         borderRadius: BorderRadius.circular(12),
       ),
@@ -498,6 +590,7 @@ class _AlertCard extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
+                    // ignore: deprecated_member_use
                     color: alert.severityColor.withOpacity(0.1),
                     shape: BoxShape.circle,
                   ),
@@ -552,13 +645,24 @@ class _AlertCard extends StatelessWidget {
             if (!alert.isAcknowledged)
               SizedBox(
                 width: double.infinity,
+                height: 48,
                 child: ElevatedButton.icon(
                   onPressed: () {
                     onAcknowledge();
                     Navigator.of(ctx).pop();
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
                   icon: const Icon(Icons.check),
-                  label: const Text('Marcar como revisada'),
+                  label: const Text(
+                    'Marcar como revisada',
+                    style: TextStyle(fontWeight: FontWeight.w600),
+                  ),
                 ),
               ),
           ],

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polarnet_flutter/core/theme/app_colors.dart';
 import 'package:polarnet_flutter/features/add/presentation/pages/add_equipment_page.dart';
 import 'package:polarnet_flutter/features/dashboard/presentation/blocs/dashboard_bloc.dart';
 import 'package:polarnet_flutter/features/dashboard/presentation/blocs/dashboard_event.dart';
@@ -73,24 +74,28 @@ class _ProviderInventoryPageState extends State<ProviderInventoryPage> {
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
-                      colorScheme.primary,
-                      colorScheme.primaryContainer,
-                      colorScheme.tertiary,
+                      AppColors.primary,
+                      AppColors.primaryDark,
+                      AppColors.primary,
                     ],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
                   ),
                 ),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 24,
-                  vertical: 32,
+                padding: const EdgeInsets.only(
+                  left: 24,
+                  right: 24,
+                  top: 32,
+                  bottom: 32,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.inventory,
-                          color: colorScheme.onPrimary,
+                          color: Colors.white,
                           size: 32,
                         ),
                         const SizedBox(width: 12),
@@ -98,11 +103,11 @@ class _ProviderInventoryPageState extends State<ProviderInventoryPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              'Mi Inventario',
+                              'Inventario',
                               style: Theme.of(context).textTheme.headlineMedium
                                   ?.copyWith(
                                     fontWeight: FontWeight.bold,
-                                    color: colorScheme.onPrimary,
+                                    color: Colors.white,
                                   ),
                             ),
                             Text(
@@ -110,9 +115,7 @@ class _ProviderInventoryPageState extends State<ProviderInventoryPage> {
                               style: Theme.of(context).textTheme.bodyMedium
                                   ?.copyWith(
                                     // ignore: deprecated_member_use
-                                    color: colorScheme.onPrimary.withOpacity(
-                                      0.9,
-                                    ),
+                                    color: Colors.white.withOpacity(0.9),
                                   ),
                             ),
                           ],
@@ -125,9 +128,9 @@ class _ProviderInventoryPageState extends State<ProviderInventoryPage> {
                           RefreshProviderEquipments(widget.providerId),
                         );
                       },
-                      icon: Icon(
+                      icon: const Icon(
                         Icons.refresh,
-                        color: colorScheme.onPrimary,
+                        color: Colors.white,
                         size: 28,
                       ),
                     ),
@@ -391,30 +394,27 @@ class _ProviderInventoryPageState extends State<ProviderInventoryPage> {
         if (availableCount > 0 || unavailableCount > 0) ...[
           Row(
             children: [
-              if (availableCount > 0)
-                Expanded(
-                  child: QuickStatCard(
-                    label: 'Disponibles',
-                    count: availableCount,
-                    icon: Icons.check_circle,
-                    // ignore: deprecated_member_use
-                    backgroundColor: Colors.green.withOpacity(0.2),
-                    iconColor: Colors.green,
-                  ),
+              Expanded(
+                child: QuickStatCard(
+                  label: 'Disponibles',
+                  count: availableCount,
+                  icon: Icons.check_circle,
+                  // ignore: deprecated_member_use
+                  backgroundColor: Colors.green.withOpacity(0.15),
+                  iconColor: const Color(0xFF2E7D32),
                 ),
-              if (availableCount > 0 && unavailableCount > 0)
-                const SizedBox(width: 12),
-              if (unavailableCount > 0)
-                Expanded(
-                  child: QuickStatCard(
-                    label: 'No disponibles',
-                    count: unavailableCount,
-                    icon: Icons.cancel,
-                    // ignore: deprecated_member_use
-                    backgroundColor: Colors.orange.withOpacity(0.2),
-                    iconColor: Colors.orange,
-                  ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: QuickStatCard(
+                  label: 'Ocupados',
+                  count: unavailableCount,
+                  icon: Icons.pending,
+                  // ignore: deprecated_member_use
+                  backgroundColor: Colors.orange.withOpacity(0.15),
+                  iconColor: const Color(0xFFE65100),
                 ),
+              ),
             ],
           ),
           const SizedBox(height: 16),
