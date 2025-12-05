@@ -17,6 +17,14 @@ import 'package:polarnet_flutter/features/home/data/repositories/provider_home_r
 import 'package:polarnet_flutter/features/home/domain/repositories/provider_home_repository.dart';
 import 'package:polarnet_flutter/features/home/presentation/blocs/provider_home_bloc.dart';
 import 'package:polarnet_flutter/features/inventory/presentation/blocs/provider_inventory_bloc.dart';
+import 'package:polarnet_flutter/features/alerts/data/remote/alert_service.dart';
+import 'package:polarnet_flutter/features/alerts/data/repositories/alert_repository_impl.dart';
+import 'package:polarnet_flutter/features/alerts/domain/repositories/alert_repository.dart';
+import 'package:polarnet_flutter/features/alerts/presentation/blocs/alert_bloc.dart';
+import 'package:polarnet_flutter/features/notification/data/remote/notification_service.dart';
+import 'package:polarnet_flutter/features/notification/data/repositories/notification_repository_impl.dart';
+import 'package:polarnet_flutter/features/notification/domain/repositories/notification_repository.dart';
+import 'package:polarnet_flutter/features/notification/presentation/blocs/notification_bloc.dart';
 import 'package:polarnet_flutter/main/main_provider_page.dart';
 import 'dart:developer' as developer;
 import 'core/theme/app_theme.dart';
@@ -59,13 +67,23 @@ void main() async {
     developer.log('✅ Database inicializado', name: 'PolarNet');
 
     developer.log('🎯 Lanzando app...', name: 'PolarNet');
-    final iotRepository = IoTRepositoryImpl(IoTService());
+    final alertService = AlertService();
+    final notificationService = NotificationService();
+    final iotRepository = IoTRepositoryImpl(
+      IoTService(),
+      alertService,
+      notificationService,
+    );
     final equipmentRepository = EquipmentRepositoryImpl(EquipmentService());
     final addEquipmentRepository = AddEquipmentRepositoryImpl(
       AddEquipmentService(),
     );
     final providerHomeRepository = ProviderHomeRepositoryImpl(
       ProviderHomeService(),
+    );
+    final alertRepository = AlertRepositoryImpl(alertService);
+    final notificationRepository = NotificationRepositoryImpl(
+      notificationService,
     );
 
     runApp(
@@ -75,6 +93,8 @@ void main() async {
         database: database,
         equipmentRepository: equipmentRepository,
         addEquipmentRepository: addEquipmentRepository,
+        alertRepository: alertRepository,
+        notificationRepository: notificationRepository,
         providerHomeRepository: providerHomeRepository,
         iotRepository: iotRepository,
       ),
@@ -126,6 +146,8 @@ class MyApp extends StatelessWidget {
   final EquipmentRepository equipmentRepository;
   final AddEquipmentRepository addEquipmentRepository;
   final ProviderHomeRepository providerHomeRepository;
+  final AlertRepository alertRepository;
+  final NotificationRepository notificationRepository;
 
   const MyApp({
     super.key,
@@ -136,6 +158,8 @@ class MyApp extends StatelessWidget {
     required this.addEquipmentRepository,
     required this.providerHomeRepository,
     required this.iotRepository,
+    required this.alertRepository,
+    required this.notificationRepository,
   });
 
   @override
@@ -167,6 +191,10 @@ class MyApp extends StatelessWidget {
           create: (context) => ProviderInventoryBloc(equipmentRepository),
         ),
         BlocProvider(create: (context) => IoTBloc(iotRepository)),
+        BlocProvider(create: (context) => AlertBloc(alertRepository)),
+        BlocProvider(
+          create: (context) => NotificationBloc(notificationRepository),
+        ),
       ],
       child: MaterialApp(
         title: 'PolarNet',

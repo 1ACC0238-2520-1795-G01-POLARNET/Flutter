@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:polarnet_flutter/features/add/presentation/pages/add_equipment_page.dart';
+import 'package:polarnet_flutter/features/dashboard/presentation/blocs/dashboard_bloc.dart';
+import 'package:polarnet_flutter/features/dashboard/presentation/blocs/dashboard_event.dart';
+import 'package:polarnet_flutter/features/dashboard/presentation/pages/dashboard_page.dart';
 import 'package:polarnet_flutter/features/inventory/presentation/blocs/provider_inventory_bloc.dart';
 import 'package:polarnet_flutter/features/inventory/presentation/blocs/provider_inventory_event.dart';
 import 'package:polarnet_flutter/features/inventory/presentation/blocs/provider_inventory_state.dart';
@@ -9,10 +13,7 @@ import 'package:polarnet_flutter/features/inventory/presentation/widgets/quick_s
 class ProviderInventoryPage extends StatefulWidget {
   final int providerId;
 
-  const ProviderInventoryPage({
-    super.key,
-    required this.providerId,
-  });
+  const ProviderInventoryPage({super.key, required this.providerId});
 
   @override
   State<ProviderInventoryPage> createState() => _ProviderInventoryPageState();
@@ -22,9 +23,9 @@ class _ProviderInventoryPageState extends State<ProviderInventoryPage> {
   @override
   void initState() {
     super.initState();
-    context
-        .read<ProviderInventoryBloc>()
-        .add(LoadProviderEquipments(widget.providerId));
+    context.read<ProviderInventoryBloc>().add(
+      LoadProviderEquipments(widget.providerId),
+    );
   }
 
   @override
@@ -36,215 +37,241 @@ class _ProviderInventoryPageState extends State<ProviderInventoryPage> {
         final equipments = state.filteredEquipments;
         final categories = state.categories;
 
-        return Column(
-          children: [
-            // Header con gradiente
-            Container(
-              width: double.infinity,
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  colors: [
-                    colorScheme.primary,
-                    colorScheme.primaryContainer,
-                    colorScheme.tertiary,
-                  ],
+        return Scaffold(
+          backgroundColor: Colors.transparent,
+          floatingActionButton: FloatingActionButton(
+            onPressed: () async {
+              final result = await Navigator.push<bool>(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => AddEquipmentPage(
+                    providerId: widget.providerId,
+                    onEquipmentAdded: () {
+                      context.read<ProviderInventoryBloc>().add(
+                        RefreshProviderEquipments(widget.providerId),
+                      );
+                    },
+                  ),
                 ),
-              ),
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Row(
-                    children: [
-                      Icon(
-                        Icons.inventory,
-                        color: colorScheme.onPrimary,
-                        size: 32,
-                      ),
-                      const SizedBox(width: 12),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Mi Inventario',
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineMedium
-                                ?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                  color: colorScheme.onPrimary,
-                                ),
-                          ),
-                          Text(
-                            '${equipments.length} equipos totales',
-                            style: Theme.of(context)
-                                .textTheme
-                                .bodyMedium
-                                ?.copyWith(
-                                  // ignore: deprecated_member_use
-                                  color: colorScheme.onPrimary.withOpacity(0.9),
-                                ),
-                          ),
-                        ],
-                      ),
+              );
+              if (result == true) {
+                // ignore: use_build_context_synchronously
+                context.read<ProviderInventoryBloc>().add(
+                  RefreshProviderEquipments(widget.providerId),
+                );
+              }
+            },
+            backgroundColor: colorScheme.primary,
+            foregroundColor: colorScheme.onPrimary,
+            child: const Icon(Icons.add),
+          ),
+          body: Column(
+            children: [
+              // Header con gradiente
+              Container(
+                width: double.infinity,
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      colorScheme.primary,
+                      colorScheme.primaryContainer,
+                      colorScheme.tertiary,
                     ],
                   ),
-                  IconButton(
-                    onPressed: () {
-                      context
-                          .read<ProviderInventoryBloc>()
-                          .add(RefreshProviderEquipments(widget.providerId));
-                    },
-                    icon: Icon(
-                      Icons.refresh,
-                      color: colorScheme.onPrimary,
-                      size: 28,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-
-            // Filtros
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Filtro de disponibilidad
-                  Material(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(
-                        color: state.showOnlyAvailable
-                            // ignore: deprecated_member_use
-                            ? Colors.green.withOpacity(0.5)
-                            // ignore: deprecated_member_use
-                            : colorScheme.outline.withOpacity(0.5),
-                      ),
-                    ),
-                    color: state.showOnlyAvailable
-                        // ignore: deprecated_member_use
-                        ? Colors.green.withOpacity(0.1)
-                        : colorScheme.surfaceContainerHighest,
-                    child: InkWell(
-                      onTap: () {
-                        context
-                            .read<ProviderInventoryBloc>()
-                            .add(ToggleAvailabilityFilter());
-                      },
-                      borderRadius: BorderRadius.circular(12),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                ),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 24,
+                  vertical: 32,
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.inventory,
+                          color: colorScheme.onPrimary,
+                          size: 32,
+                        ),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
-                              children: [
-                                Icon(
-                                  state.showOnlyAvailable
-                                      ? Icons.check_circle
-                                      : Icons.filter_alt,
-                                  color: state.showOnlyAvailable
-                                      ? Colors.green
-                                      : colorScheme.onSurfaceVariant,
-                                ),
-                                const SizedBox(width: 12),
-                                Text(
-                                  'Mostrar solo disponibles',
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyMedium
-                                      ?.copyWith(
-                                        fontWeight: FontWeight.w500,
-                                      ),
-                                ),
-                              ],
+                            Text(
+                              'Mi Inventario',
+                              style: Theme.of(context).textTheme.headlineMedium
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: colorScheme.onPrimary,
+                                  ),
                             ),
-                            Switch(
-                              value: state.showOnlyAvailable,
-                              onChanged: (_) {
-                                context
-                                    .read<ProviderInventoryBloc>()
-                                    .add(ToggleAvailabilityFilter());
-                              },
+                            Text(
+                              '${equipments.length} equipos totales',
+                              style: Theme.of(context).textTheme.bodyMedium
+                                  ?.copyWith(
+                                    // ignore: deprecated_member_use
+                                    color: colorScheme.onPrimary.withOpacity(
+                                      0.9,
+                                    ),
+                                  ),
                             ),
                           ],
                         ),
-                      ),
+                      ],
                     ),
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  // Filtro por categorías
-                  if (categories.isNotEmpty) ...[
-                    Text(
-                      'Categorías',
-                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                            fontWeight: FontWeight.w600,
-                            color: colorScheme.onSurfaceVariant,
-                          ),
-                    ),
-                    const SizedBox(height: 8),
-                    SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Row(
-                        children: [
-                          FilterChip(
-                            selected: state.selectedCategory == 'all',
-                            onSelected: (_) {
-                              context
-                                  .read<ProviderInventoryBloc>()
-                                  .add(FilterByCategory('all'));
-                            },
-                            label: const Text('Todas'),
-                            avatar: state.selectedCategory == 'all'
-                                ? const Icon(Icons.check, size: 18)
-                                : null,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          ...categories.map((category) {
-                            return Padding(
-                              padding: const EdgeInsets.only(right: 8.0),
-                              child: FilterChip(
-                                selected: state.selectedCategory == category,
-                                onSelected: (_) {
-                                  context
-                                      .read<ProviderInventoryBloc>()
-                                      .add(FilterByCategory(category));
-                                },
-                                label: Text(category),
-                                avatar: state.selectedCategory == category
-                                    ? const Icon(Icons.check, size: 18)
-                                    : null,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                ),
-                              ),
-                            );
-                          }),
-                        ],
+                    IconButton(
+                      onPressed: () {
+                        context.read<ProviderInventoryBloc>().add(
+                          RefreshProviderEquipments(widget.providerId),
+                        );
+                      },
+                      icon: Icon(
+                        Icons.refresh,
+                        color: colorScheme.onPrimary,
+                        size: 28,
                       ),
                     ),
                   ],
-                ],
+                ),
               ),
-            ),
 
-            Divider(
-              // ignore: deprecated_member_use
-              color: colorScheme.outlineVariant.withOpacity(0.5),
-            ),
+              // Filtros
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Filtro de disponibilidad
+                    Material(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(
+                          color: state.showOnlyAvailable
+                              // ignore: deprecated_member_use
+                              ? Colors.green.withOpacity(0.5)
+                              // ignore: deprecated_member_use
+                              : colorScheme.outline.withOpacity(0.5),
+                        ),
+                      ),
+                      color: state.showOnlyAvailable
+                          // ignore: deprecated_member_use
+                          ? Colors.green.withOpacity(0.1)
+                          : colorScheme.surfaceContainerHighest,
+                      child: InkWell(
+                        onTap: () {
+                          context.read<ProviderInventoryBloc>().add(
+                            ToggleAvailabilityFilter(),
+                          );
+                        },
+                        borderRadius: BorderRadius.circular(12),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12.0),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    state.showOnlyAvailable
+                                        ? Icons.check_circle
+                                        : Icons.filter_alt,
+                                    color: state.showOnlyAvailable
+                                        ? Colors.green
+                                        : colorScheme.onSurfaceVariant,
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Text(
+                                    'Mostrar solo disponibles',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .bodyMedium
+                                        ?.copyWith(fontWeight: FontWeight.w500),
+                                  ),
+                                ],
+                              ),
+                              Switch(
+                                value: state.showOnlyAvailable,
+                                onChanged: (_) {
+                                  context.read<ProviderInventoryBloc>().add(
+                                    ToggleAvailabilityFilter(),
+                                  );
+                                },
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
 
-            // Contenido
-            Expanded(
-              child: _buildContent(context, state, equipments),
-            ),
-          ],
+                    const SizedBox(height: 12),
+
+                    // Filtro por categorías
+                    if (categories.isNotEmpty) ...[
+                      Text(
+                        'Categorías',
+                        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
+                        child: Row(
+                          children: [
+                            FilterChip(
+                              selected: state.selectedCategory == 'all',
+                              onSelected: (_) {
+                                context.read<ProviderInventoryBloc>().add(
+                                  FilterByCategory('all'),
+                                );
+                              },
+                              label: const Text('Todas'),
+                              avatar: state.selectedCategory == 'all'
+                                  ? const Icon(Icons.check, size: 18)
+                                  : null,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            ...categories.map((category) {
+                              return Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: FilterChip(
+                                  selected: state.selectedCategory == category,
+                                  onSelected: (_) {
+                                    context.read<ProviderInventoryBloc>().add(
+                                      FilterByCategory(category),
+                                    );
+                                  },
+                                  label: Text(category),
+                                  avatar: state.selectedCategory == category
+                                      ? const Icon(Icons.check, size: 18)
+                                      : null,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                ),
+                              );
+                            }),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+
+              Divider(
+                // ignore: deprecated_member_use
+                color: colorScheme.outlineVariant.withOpacity(0.5),
+              ),
+
+              // Contenido
+              Expanded(child: _buildContent(context, state, equipments)),
+            ],
+          ),
         );
       },
     );
@@ -262,15 +289,13 @@ class _ProviderInventoryPageState extends State<ProviderInventoryPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CircularProgressIndicator(
-              color: colorScheme.primary,
-            ),
+            CircularProgressIndicator(color: colorScheme.primary),
             const SizedBox(height: 16),
             Text(
               'Cargando inventario...',
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
+                color: colorScheme.onSurfaceVariant,
+              ),
             ),
           ],
         ),
@@ -284,33 +309,29 @@ class _ProviderInventoryPageState extends State<ProviderInventoryPage> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: colorScheme.error,
-              ),
+              Icon(Icons.error_outline, size: 64, color: colorScheme.error),
               const SizedBox(height: 16),
               Text(
                 'Error al cargar',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: colorScheme.error,
-                    ),
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.error,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 state.errorMessage!,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
+                  color: colorScheme.onSurfaceVariant,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 24),
               FilledButton.icon(
                 onPressed: () {
-                  context
-                      .read<ProviderInventoryBloc>()
-                      .add(RefreshProviderEquipments(widget.providerId));
+                  context.read<ProviderInventoryBloc>().add(
+                    RefreshProviderEquipments(widget.providerId),
+                  );
                 },
                 icon: const Icon(Icons.refresh),
                 label: const Text('Reintentar'),
@@ -340,9 +361,9 @@ class _ProviderInventoryPageState extends State<ProviderInventoryPage> {
                     ? 'No hay equipos con estos filtros'
                     : 'No hay equipos registrados',
                 style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.w600,
-                      color: colorScheme.onSurfaceVariant,
-                    ),
+                  fontWeight: FontWeight.w600,
+                  color: colorScheme.onSurfaceVariant,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -350,9 +371,9 @@ class _ProviderInventoryPageState extends State<ProviderInventoryPage> {
                     ? 'Intenta ajustar los filtros'
                     : 'Agrega equipos desde el botón \'+\'',
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      // ignore: deprecated_member_use
-                      color: colorScheme.onSurfaceVariant.withOpacity(0.7),
-                    ),
+                  // ignore: deprecated_member_use
+                  color: colorScheme.onSurfaceVariant.withOpacity(0.7),
+                ),
               ),
             ],
           ),
@@ -406,7 +427,25 @@ class _ProviderInventoryPageState extends State<ProviderInventoryPage> {
             child: EquipmentInventoryCard(
               equipment: equipment,
               onTap: () {
-                // TODO: Navigate to equipment detail
+                // Solo navegar al dashboard si el equipo está ocupado (no disponible)
+                if (!equipment.available) {
+                  // Configurar los IDs de usuario y nombre del equipo antes de cargar datos
+                  context.read<IoTBloc>().add(
+                    SetUserIds(
+                      providerId: widget.providerId.toString(),
+                      equipmentName: equipment.name,
+                    ),
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => IoTDashboardPage(
+                        equipmentId: equipment.id,
+                        equipmentName: equipment.name,
+                      ),
+                    ),
+                  );
+                }
               },
             ),
           );

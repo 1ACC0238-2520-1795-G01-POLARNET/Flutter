@@ -5,6 +5,17 @@ abstract class IoTEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class SetUserIds extends IoTEvent {
+  final String? clientId;
+  final String? providerId;
+  final String? equipmentName;
+
+  SetUserIds({this.clientId, this.providerId, this.equipmentName});
+
+  @override
+  List<Object?> get props => [clientId, providerId, equipmentName];
+}
+
 class LoadIoTData extends IoTEvent {
   final int equipmentId;
   LoadIoTData(this.equipmentId);

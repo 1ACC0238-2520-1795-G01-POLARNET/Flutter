@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:polarnet_flutter/features/auth/presentation/blocs/auth_bloc.dart';
 import 'package:polarnet_flutter/features/auth/presentation/blocs/auth_state.dart';
-import 'package:polarnet_flutter/features/dashboard/presentation/pages/dashboard_page.dart';
 import 'package:polarnet_flutter/features/home/presentation/pages/provider_requests_page.dart';
 import 'package:polarnet_flutter/features/inventory/presentation/pages/provider_inventory_page.dart';
 import 'package:polarnet_flutter/features/profile/presentation/pages/profile_page.dart';
+import 'package:polarnet_flutter/features/alerts/presentation/pages/alerts_page.dart';
 
 class MainProviderPage extends StatefulWidget {
   const MainProviderPage({super.key});
@@ -24,12 +24,7 @@ class _MainProviderPageState extends State<MainProviderPage> {
       case 1:
         return ProviderInventoryPage(providerId: providerId);
       case 2:
-        return IoTDashboardPage(equipmentId: 123, equipmentName: "Equipo 123");
-
-      /*AddEquipmentPage(
-          providerId: providerId,
-          onEquipmentAdded: () {},
-        );*/
+        return const AlertsPage();
       case 3:
         return const ProfilePage();
       default:
@@ -49,12 +44,13 @@ class _MainProviderPageState extends State<MainProviderPage> {
         return Scaffold(
           body: SafeArea(child: _buildPage(_selectedIndex, providerId)),
           bottomNavigationBar: BottomNavigationBar(
+            type: BottomNavigationBarType.fixed,
             currentIndex: _selectedIndex,
             onTap: (value) => setState(() => _selectedIndex = value),
             selectedItemColor: Colors.black,
-            unselectedItemColor: Colors.black,
+            unselectedItemColor: Colors.grey,
             selectedLabelStyle: const TextStyle(color: Colors.black),
-            unselectedLabelStyle: const TextStyle(color: Colors.black),
+            unselectedLabelStyle: const TextStyle(color: Colors.grey),
             items: const [
               BottomNavigationBarItem(
                 icon: Icon(Icons.home_outlined),
@@ -67,9 +63,9 @@ class _MainProviderPageState extends State<MainProviderPage> {
                 label: 'Inventario',
               ),
               BottomNavigationBarItem(
-                icon: Icon(Icons.add_box_outlined),
-                activeIcon: Icon(Icons.add_box),
-                label: 'Agregar',
+                icon: Icon(Icons.notifications_outlined),
+                activeIcon: Icon(Icons.notifications),
+                label: 'Alertas',
               ),
               BottomNavigationBarItem(
                 icon: Icon(Icons.person_outline),

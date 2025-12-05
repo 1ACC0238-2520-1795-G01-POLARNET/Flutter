@@ -9,10 +9,19 @@ class IoTBloc extends Bloc<IoTEvent, IoTState> {
   Timer? _autoRefreshTimer;
 
   IoTBloc(this.repository) : super(IoTInitial()) {
+    on<SetUserIds>(_onSetUserIds);
     on<LoadIoTData>(_onLoadIoTData);
     on<RefreshIoTData>(_onRefreshIoTData);
     on<StartAutoRefresh>(_onStartAutoRefresh);
     on<StopAutoRefresh>(_onStopAutoRefresh);
+  }
+
+  void _onSetUserIds(SetUserIds event, Emitter<IoTState> emit) {
+    repository.setUserIds(
+      clientId: event.clientId,
+      providerId: event.providerId,
+      equipmentName: event.equipmentName,
+    );
   }
 
   Future<void> _onLoadIoTData(LoadIoTData event, Emitter<IoTState> emit) async {
