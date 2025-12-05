@@ -1,4 +1,3 @@
-import 'package:polarnet_flutter/features/notification/data/models/notification_dto.dart';
 import 'package:polarnet_flutter/features/notification/data/remote/notification_service.dart';
 import 'package:polarnet_flutter/features/notification/domain/models/notification.dart';
 import 'package:polarnet_flutter/features/notification/domain/repositories/notification_repository.dart';
